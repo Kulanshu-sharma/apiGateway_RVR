@@ -3,6 +3,7 @@ package com.RVR.apiGateway.apiGateway_RVR.configurations;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,12 @@ public class JWTVerificationFilter implements GatewayFilter {
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		ServerHttpRequest request = (ServerHttpRequest) exchange.getRequest();
 
-		final List<String> apiEndpoints = List.of("/register","/login");
+		final List<String> apiEndpoints = List.of("/home");
 
 		Predicate<ServerHttpRequest> isApiSecured = r -> apiEndpoints.stream()
 				.noneMatch(uri -> r.getURI().getPath().contains(uri));
 
-		if (isApiSecured.test(request)) {
+		if (isApiSecured.test(request)) {          //Requests that we want to authenticate(except home)
 			if (!request.getHeaders().containsKey("Authorization")) {
 				ServerHttpResponse response = (ServerHttpResponse) exchange.getResponse();
 				response.setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -78,6 +79,10 @@ public class JWTVerificationFilter implements GatewayFilter {
 				return ((ReactiveHttpOutputMessage) response).setComplete();	
 			}
 			exchange.getRequest().mutate().header("id", String.valueOf(claims.get("id"))).build();
+		}
+		else {       //Generate token if the request is of 'home'
+			final String token = jwtUtility.generateToken("Guest"); 
+			exchange.getRequest().mutate().header(HttpHeaders.AUTHORIZATION,token);
 		}
 
 		return chain.filter(exchange);
