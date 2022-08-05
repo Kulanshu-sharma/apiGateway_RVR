@@ -17,8 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 
-import com.RVR.apiGateway.apiGateway_RVR.exceptions.NoTokenGeneratedException;
-
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -43,7 +41,7 @@ public class SystemConfiguration {
 		return (exchange, chain) -> {
 			System.out.println("Used for License Key in Future");
 			return chain.filter(exchange).then(Mono.fromRunnable(() -> { 
-				List<String> claims = exchange.getResponse().getHeaders().get(HttpHeaders.AUTHORIZATION);
+				List<String> claims = exchange.getResponse().getHeaders().get("userData");
 				if(claims==null) {
 					LOGGER.error("No Claims/Payload data is coming from the inner microservice to Api Gateway Post Filter");
 					exchange.getResponse().setStatusCode(HttpStatus.NON_AUTHORITATIVE_INFORMATION);
@@ -51,7 +49,7 @@ public class SystemConfiguration {
 				else {
 					Map<String, Object> data = (new BasicJsonParser()).parseMap(claims.get(0));
 					data.put("tokenId",UUID.randomUUID().toString());
-					String token = jwtUtility.doGenerateToken(data,"Kulanshu");
+					String token = jwtUtility.doGenerateToken(data,"Guest");
 					exchange.getResponse().getHeaders().set(HttpHeaders.AUTHORIZATION,token);
 				}
 			}));

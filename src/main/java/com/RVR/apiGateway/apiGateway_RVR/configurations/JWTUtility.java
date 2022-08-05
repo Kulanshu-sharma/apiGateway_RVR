@@ -3,8 +3,11 @@ package com.RVR.apiGateway.apiGateway_RVR.configurations;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +29,13 @@ public class JWTUtility {
 				   .getBody();
 	}
 	
+	public String fetchJSONObjectFromClaims(Claims claims) {
+		JSONObject jsonObject = new JSONObject();
+		claims.forEach((key,value)-> {
+			jsonObject.put(key,value);
+		});
+		return jsonObject.toString();
+	}
 	public String getUsernameFromToken(String token) throws Exception {
 		return getClaimFromToken(token, Claims::getSubject);
 	}
@@ -41,6 +51,7 @@ public class JWTUtility {
 	
 	public String generateToken(String userDetails) {
 		Map<String, Object> claims = new HashMap<String,Object>();
+		claims.put("tokenId",UUID.randomUUID().toString());
 		return doGenerateToken(claims, userDetails);
 	}
 	

@@ -71,18 +71,18 @@ public class JWTVerificationFilter implements GatewayFilter {
 				return ((ReactiveHttpOutputMessage) response).setComplete();
 			} catch (IllegalArgumentException ex) {
 				response = (ServerHttpResponse) exchange.getResponse();
-				response.setStatusCode(HttpStatus.NO_CONTENT);
+				response.setStatusCode(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED);
 				return ((ReactiveHttpOutputMessage) response).setComplete();
 			} catch (Exception e) {
 				response = (ServerHttpResponse) exchange.getResponse();
 				response.setStatusCode(HttpStatus.BAD_GATEWAY);
 				return ((ReactiveHttpOutputMessage) response).setComplete();	
 			}
-			exchange.getRequest().mutate().header("id", String.valueOf(claims.get("id"))).build();
+			exchange.getRequest().mutate().header("userData",jwtUtility.fetchJSONObjectFromClaims(claims)).build();
 		}
 		else {       //Generate token if the request is of 'home'
 			final String token = jwtUtility.generateToken("Guest"); 
-			exchange.getRequest().mutate().header(HttpHeaders.AUTHORIZATION,token);
+			exchange.getRequest().mutate().header("userData","");
 		}
 
 		return chain.filter(exchange);
