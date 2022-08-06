@@ -81,8 +81,8 @@ public class JWTVerificationFilter implements GatewayFilter {
 			exchange.getRequest().mutate().header("userData",jwtUtility.fetchJSONObjectFromClaims(claims)).build();
 		}
 		else {       //Generate token if the request is of 'home'
-			final String token = jwtUtility.generateToken("Guest"); 
-			exchange.getRequest().mutate().header("userData","");
+			final String tokenClaims = jwtUtility.generateToken("Guest"); 
+			exchange.getRequest().mutate().header("userData",tokenClaims);
 		}
 
 		return chain.filter(exchange);

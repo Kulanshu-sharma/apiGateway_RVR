@@ -36,6 +36,13 @@ public class JWTUtility {
 		});
 		return jsonObject.toString();
 	}
+	public String fetchJSONObjectFromMap(Map<String,Object> claims) {
+		JSONObject jsonObject = new JSONObject();
+		claims.forEach((key,value)-> {
+			jsonObject.put(key,value);
+		});
+		return jsonObject.toString();
+	}
 	public String getUsernameFromToken(String token) throws Exception {
 		return getClaimFromToken(token, Claims::getSubject);
 	}
@@ -52,7 +59,8 @@ public class JWTUtility {
 	public String generateToken(String userDetails) {
 		Map<String, Object> claims = new HashMap<String,Object>();
 		claims.put("tokenId",UUID.randomUUID().toString());
-		return doGenerateToken(claims, userDetails);
+		doGenerateToken(claims, userDetails);
+		return fetchJSONObjectFromMap(claims);
 	}
 	
 	public Boolean isTokenExpired(String token) throws Exception {
