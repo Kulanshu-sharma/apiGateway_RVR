@@ -31,8 +31,8 @@ public class SystemConfiguration {
 	
 	@Bean
 	public RouteLocator routes(RouteLocatorBuilder builder) {
-		return builder.routes().route("limit-service", r -> r.path("/secure/**").filters(f -> f.filter(filter)).uri("http://localhost:8080"))
-				               .route("limit-service", r -> r.path("/home").filters(f -> f.filter(filter)).uri("http://localhost:8080")).build();
+		return builder.routes().route("limit-service", r -> r.path("/client/**").filters(f -> f.filter(filter)).uri("http://localhost:8082"))
+				               .build();
 	}
 	
 	@Bean
