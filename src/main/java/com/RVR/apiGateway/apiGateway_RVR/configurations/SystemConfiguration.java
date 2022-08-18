@@ -31,8 +31,9 @@ public class SystemConfiguration {
 	
 	@Bean
 	public RouteLocator routes(RouteLocatorBuilder builder) {
-		return builder.routes().route("limit-service", r -> r.path("/client/**").filters(f -> f.filter(filter)).uri("lb://CLIENT-SERVICE"))
+		return builder.routes().route("client-service", r -> r.path("/client/**").filters(f -> f.filter(filter)).uri("lb://CLIENT-SERVICE"))
 				               .route("api-cluster-node", r -> r.path("/apiCluster/**").filters(f -> f.filter(filter)).uri("lb://API-CLUSTER-NODE"))
+				               .route("user-service", r -> r.path("/user/**").filters(f -> f.filter(filter)).uri("lb://USER-SERVICE"))
 				               .build();
 	}
 	
