@@ -31,7 +31,8 @@ public class SystemConfiguration {
 	
 	@Bean
 	public RouteLocator routes(RouteLocatorBuilder builder) {
-		return builder.routes().route("limit-service", r -> r.path("/client/**").filters(f -> f.filter(filter)).uri("http://localhost:8082"))
+		return builder.routes().route("limit-service", r -> r.path("/client/**").filters(f -> f.filter(filter)).uri("lb://CLIENT-SERVICE"))
+				               .route("api-cluster-node", r -> r.path("/apiCluster/**").filters(f -> f.filter(filter)).uri("lb://API-CLUSTER-NODE"))
 				               .build();
 	}
 	
@@ -44,7 +45,7 @@ public class SystemConfiguration {
 				List<String> claims = exchange.getResponse().getHeaders().get("userData");
 				if(claims==null) {
 					LOGGER.error("No Claims/Payload data is coming from the inner microservice to Api Gateway Post Filter");
-					exchange.getResponse().setStatusCode(HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+					//exchange.getResponse().setStatusCode(HttpStatus.NON_AUTHORITATIVE_INFORMATION);
 				}
 				else {
 					Map<String, Object> data = (new BasicJsonParser()).parseMap(claims.get(0));
