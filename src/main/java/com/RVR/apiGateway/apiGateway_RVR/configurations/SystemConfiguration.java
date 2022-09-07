@@ -15,11 +15,12 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import reactor.core.publisher.Mono;
 
 @Configuration
+@CrossOrigin(origins="*")
 public class SystemConfiguration {
 
 	@Autowired
@@ -53,6 +54,8 @@ public class SystemConfiguration {
 					data.put("tokenId",UUID.randomUUID().toString());
 					String token = jwtUtility.doGenerateToken(data,"Guest");
 					exchange.getResponse().getHeaders().set(HttpHeaders.AUTHORIZATION,token);
+					exchange.getResponse().getHeaders().set("Access-Control-Allow-Origin","*");
+					exchange.getResponse().getHeaders().set("Access-Control-Expose-Headers",HttpHeaders.AUTHORIZATION);
 				}
 			}));
 		};

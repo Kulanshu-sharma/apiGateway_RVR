@@ -42,9 +42,13 @@ public class JWTVerificationFilter implements GatewayFilter {
 
 		if (isApiSecured.test(request)) {          //Requests that we want to authenticate(except home)
 			if (!request.getHeaders().containsKey("Authorization")) {
+				LOGGER.info("Authentication Failed :"+request.getPath());
 				ServerHttpResponse response = (ServerHttpResponse) exchange.getResponse();
 				response.setStatusCode(HttpStatus.UNAUTHORIZED);
-
+				//response.getHeaders().set("Access-Control-Allow-Origin","*");
+                //response.getHeaders().set("Access-Control-Expose-Headers",HttpHeaders.AUTHORIZATION);
+                //response.getHeaders().set("Access-Control-Allow-Headers",HttpHeaders.AUTHORIZATION);
+                //response.getHeaders().set("Access-Control-Allow-Methods","GET,POST,OPTIONS,PUT,DELETE");
 				return ((ReactiveHttpOutputMessage) response).setComplete();
 			}
 
@@ -56,26 +60,38 @@ public class JWTVerificationFilter implements GatewayFilter {
 			} catch (SignatureException ex) {
 				response = (ServerHttpResponse) exchange.getResponse();
 				response.setStatusCode(HttpStatus.UNAUTHORIZED);
+				response.getHeaders().set("Access-Control-Allow-Origin","*");
+                response.getHeaders().set("Access-Control-Expose-Headers",HttpHeaders.AUTHORIZATION);
 				return ((ReactiveHttpOutputMessage) response).setComplete();
 			} catch (MalformedJwtException ex) {
 				response = (ServerHttpResponse) exchange.getResponse();
 				response.setStatusCode(HttpStatus.NOT_ACCEPTABLE);
+				response.getHeaders().set("Access-Control-Allow-Origin","*");
+                response.getHeaders().set("Access-Control-Expose-Headers",HttpHeaders.AUTHORIZATION);
 				return ((ReactiveHttpOutputMessage) response).setComplete();
 			} catch (ExpiredJwtException ex) {
 				response = (ServerHttpResponse) exchange.getResponse();
 				response.setStatusCode(HttpStatus.REQUEST_TIMEOUT);
+				response.getHeaders().set("Access-Control-Allow-Origin","*");
+                response.getHeaders().set("Access-Control-Expose-Headers",HttpHeaders.AUTHORIZATION);
 				return ((ReactiveHttpOutputMessage) response).setComplete();
 			} catch (UnsupportedJwtException ex) {
 				response = (ServerHttpResponse) exchange.getResponse();
 				response.setStatusCode(HttpStatus.NOT_ACCEPTABLE);
+				response.getHeaders().set("Access-Control-Allow-Origin","*");
+                response.getHeaders().set("Access-Control-Expose-Headers",HttpHeaders.AUTHORIZATION);
 				return ((ReactiveHttpOutputMessage) response).setComplete();
 			} catch (IllegalArgumentException ex) {
 				response = (ServerHttpResponse) exchange.getResponse();
 				response.setStatusCode(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED);
+				response.getHeaders().set("Access-Control-Allow-Origin","*");
+                response.getHeaders().set("Access-Control-Expose-Headers",HttpHeaders.AUTHORIZATION);
 				return ((ReactiveHttpOutputMessage) response).setComplete();
 			} catch (Exception e) {
 				response = (ServerHttpResponse) exchange.getResponse();
 				response.setStatusCode(HttpStatus.BAD_GATEWAY);
+				response.getHeaders().set("Access-Control-Allow-Origin","*");
+                response.getHeaders().set("Access-Control-Expose-Headers",HttpHeaders.AUTHORIZATION);
 				return ((ReactiveHttpOutputMessage) response).setComplete();	
 			}
 			exchange.getRequest().mutate().header("userData",jwtUtility.fetchJSONObjectFromClaims(claims)).build();
