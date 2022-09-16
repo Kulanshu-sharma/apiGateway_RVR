@@ -38,3 +38,8 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+bootBuildImage {
+    imageName = "kulanshu/sagly-gateway:${project.version}"
+    pullPolicy = "IF_NOT_PRESENT"
+}
